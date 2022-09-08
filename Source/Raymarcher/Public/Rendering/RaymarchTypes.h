@@ -133,10 +133,13 @@ struct FRaymarchWorldParameters
 	FTransform VolumeTransform;
 	UPROPERTY(BlueprintReadWrite, Category = "Raymarch Rendering World Parameters")
 	FClippingPlaneParameters ClippingPlaneParameters;
+	UPROPERTY(BlueprintReadWrite, Category = "Raymarch Rendering World Parameters")
+	FClippingPlaneParameters SecondClippingPlaneParameters;
 
 	friend bool operator==(const FRaymarchWorldParameters& lhs, const FRaymarchWorldParameters& rhs)
 	{
-		return ((lhs.VolumeTransform.Equals(rhs.VolumeTransform)) && (lhs.ClippingPlaneParameters == rhs.ClippingPlaneParameters));
+		return ((lhs.VolumeTransform.Equals(rhs.VolumeTransform)) && (lhs.ClippingPlaneParameters == rhs.ClippingPlaneParameters) &&
+				(lhs.SecondClippingPlaneParameters == rhs.SecondClippingPlaneParameters));
 	}
 	friend bool operator!=(const FRaymarchWorldParameters& lhs, const FRaymarchWorldParameters& rhs)
 	{

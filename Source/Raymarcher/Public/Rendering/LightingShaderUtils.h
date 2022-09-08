@@ -93,6 +93,9 @@ uint32 GetBorderColorIntSingle(FDirLightParameters LightParams, FMajorAxes Major
 /// Returns clipping parameters from global world parameters.
 FClippingPlaneParameters GetLocalClippingParameters(const FRaymarchWorldParameters WorldParameters);
 
+/// Returns lower clipping parameters from global world parameters.
+FClippingPlaneParameters GetLocalSecondClippingParameters(const FRaymarchWorldParameters WorldParameters);
+
 // Returns the light's alpha at this major axis and weight (single channel)
 float GetLightAlpha(FDirLightParameters LightParams, FMajorAxes MajorAxes, unsigned index);
 

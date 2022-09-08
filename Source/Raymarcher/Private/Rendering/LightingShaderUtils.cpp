@@ -219,6 +219,23 @@ FClippingPlaneParameters GetLocalClippingParameters(const FRaymarchWorldParamete
 	return RetVal;
 }
 
+FClippingPlaneParameters GetLocalSecondClippingParameters(const FRaymarchWorldParameters WorldParameters)
+{
+	FClippingPlaneParameters RetVal;
+	// Get clipping center to (0-1) texture local space. (Invert transform, add 0.5 to get to (0-1)
+	// space of a unit cube centered on 0,0,0)
+	RetVal.Center = WorldParameters.VolumeTransform.InverseTransformPosition(WorldParameters.SecondClippingPlaneParameters.Center) + 0.5;
+	// Get clipping direction in local space
+	// TODO Why the hell does light direction work with regular InverseTransformVector
+	// but clipping direction only works with NoScale and multiplying by scale afterwards?
+	RetVal.Direction =
+		WorldParameters.VolumeTransform.InverseTransformVectorNoScale(WorldParameters.SecondClippingPlaneParameters.Direction);
+	RetVal.Direction *= WorldParameters.VolumeTransform.GetScale3D();
+	RetVal.Direction.Normalize();
+
+	return RetVal;
+}
+
 float GetLightAlpha(FDirLightParameters LightParams, FMajorAxes MajorAxes, unsigned index)
 {
 	return LightParams.LightIntensity * MajorAxes.FaceWeight[index].second;

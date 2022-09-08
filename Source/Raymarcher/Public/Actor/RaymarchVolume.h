@@ -141,6 +141,10 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	ARaymarchClipPlane* ClippingPlane = nullptr;
 
+	/** The lower clipping plane affecting this volume.**/
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	ARaymarchClipPlane* SecondClippingPlane = nullptr;
+
 	/** An array of lights affecting this volume.**/
 	UPROPERTY(BlueprintReadOnly, EditAnywhere)
 	TArray<ARaymarchLight*> LightsArray;

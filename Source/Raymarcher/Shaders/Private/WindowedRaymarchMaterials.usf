@@ -39,6 +39,7 @@ float4 PerformWindowedLitRaymarch(Texture3D DataVolume, // Data Volume
                               float3 CurPos, float Thickness, // CurPos = Entry Position, Thickness is thickness of cube along the ray. Both in UVW space.
                               float StepCount, // How many steps we should take. Actual number of steps taken is StepCount * Thickness.
                               float3 ClippingCenter, float3 ClippingDirection, // Clipping plane position and direction of clipped away region
+                              float3 SecondClippingCenter, float3 SecondClippingDirection, // Second clipping plane position and direction of clipped away region
                               float4 WindowingParams,
                               FMaterialPixelParameters MaterialParameters) // Material Parameters provided by UE.
 {
@@ -65,7 +66,7 @@ float4 PerformWindowedLitRaymarch(Texture3D DataVolume, // Data Volume
     {
         CurPos += LocalCamVec; // Because we jitter only "against" the direction of LocalCamVec, start marching before first sample.
 	    // Any position that is clipped by the clipping plane shall be ignored.
-        if (!IsCurPosClipped(CurPos, ClippingCenter, ClippingDirection))
+        if (!IsCurPosClipped(CurPos, ClippingCenter, ClippingDirection) && IsCurPosClipped(CurPos, SecondClippingCenter, SecondClippingDirection))
         {
             AccumulateWindowedRaymarchStep(LightEnergy, CurPos, DataVolume, DataVolumeSampler,
             TF, LightVolume, StepSizeWorld, WindowingParams);
@@ -100,6 +101,7 @@ float4 PerformWindowedIntensityRaymarch(Texture3D DataVolume, // Data Volume
                               float3 CurPos, float Thickness, // Position of ray entry to cube and thickness in UVW coords.
                               float StepCount, // Number of steps to take if Thickness is 1. 
                               float3 ClippingCenter, float3 ClippingDirection, // Clipping plane position and direction of clipped away region
+                              float3 SecondClippingCenter, float3 SecondClippingDirection, // Second clipping plane position and direction of clipped away region
                               float4 WindowingParams,
                               FMaterialPixelParameters MaterialParameters)                      // Material Parameters
 {
@@ -123,7 +125,7 @@ float4 PerformWindowedIntensityRaymarch(Texture3D DataVolume, // Data Volume
     {
         CurPos += LocalCamVec; // Because we jitter only "against" the direction of LocalCamVec, start marching before first sample.
 	    // Any position that is clipped by the clipping plane shall be ignored.
-        if (!IsCurPosClipped(saturate(CurPos), ClippingCenter, ClippingDirection))
+        if (!IsCurPosClipped(saturate(CurPos), ClippingCenter, ClippingDirection) && IsCurPosClipped(saturate(CurPos), SecondClippingCenter, SecondClippingDirection))
         {
             float DataValue = DataVolume.SampleLevel(Material.Clamp_WorldGroupSettings, saturate(CurPos), 0).r;
   

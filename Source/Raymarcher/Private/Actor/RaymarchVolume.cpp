@@ -236,6 +236,15 @@ void ARaymarchVolume::PostEditChangeProperty(FPropertyChangedEvent& PropertyChan
 		return;
 	}
 
+	if (PropertyName == GET_MEMBER_NAME_CHECKED(ARaymarchVolume, SecondClippingPlane))
+	{
+		if (bLitRaymarch)
+		{
+			bRequestedRecompute = true;
+		}
+		return;
+	}
+
 	// Only writable property in rendering resources is windowing parameters -> update those
 	if (PropertyName == GET_MEMBER_NAME_CHECKED(FWindowingParameters, Center) ||
 		PropertyName == GET_MEMBER_NAME_CHECKED(FWindowingParameters, Width) ||
@@ -591,6 +600,17 @@ FRaymarchWorldParameters ARaymarchVolume::GetWorldParameters()
 		retVal.ClippingPlaneParameters.Direction = FVector(0, 0, -1);
 	}
 
+	/* if (SecondClippingPlane)
+	{
+		//retVal.SecondClippingPlaneParameters = SecondClippingPlane->GetCurrentParameters();
+	}
+	else*/
+	{
+		// Set clipping plane parameters to ridiculously far and facing away, so that the volume doesn't get clipped at all
+		retVal.SecondClippingPlaneParameters.Center = FVector(0, 0, -100000);
+		retVal.SecondClippingPlaneParameters.Direction = FVector(0, 0, -1);
+	}
+
 	retVal.VolumeTransform = StaticMeshComponent->GetComponentTransform();
 	return retVal;
 }
@@ -606,6 +626,18 @@ void ARaymarchVolume::UpdateWorldParameters()
 		// Set clipping plane parameters to ridiculously far and facing away, so that the volume doesn't get clipped at all
 		WorldParameters.ClippingPlaneParameters.Center = FVector(0, 0, 100000);
 		WorldParameters.ClippingPlaneParameters.Direction = FVector(0, 0, -1);
+	}
+
+	
+	if (SecondClippingPlane)
+	{
+		WorldParameters.SecondClippingPlaneParameters = SecondClippingPlane->GetCurrentParameters();
+	}
+	else
+	{
+		// Set clipping plane parameters to ridiculously far and facing away, so that the volume doesn't get clipped at all
+		WorldParameters.SecondClippingPlaneParameters.Center = FVector(0, 0, -100000);
+		WorldParameters.SecondClippingPlaneParameters.Direction = FVector(0, 0, -1);
 	}
 
 	WorldParameters.VolumeTransform = StaticMeshComponent->GetComponentTransform();
@@ -649,16 +681,21 @@ void ARaymarchVolume::SetMaterialClippingParameters()
 {
 	// Get the Clipping Plane parameters and transform them to local space.
 	FClippingPlaneParameters LocalClippingparameters = GetLocalClippingParameters(WorldParameters);
+	FClippingPlaneParameters SecondClippingparameters = GetLocalSecondClippingParameters(WorldParameters);
 	if (LitRaymarchMaterial)
 	{
 		LitRaymarchMaterial->SetVectorParameterValue(RaymarchParams::ClippingCenter, LocalClippingparameters.Center);
 		LitRaymarchMaterial->SetVectorParameterValue(RaymarchParams::ClippingDirection, LocalClippingparameters.Direction);
+		LitRaymarchMaterial->SetVectorParameterValue(RaymarchParams::SecondClippingCenter, SecondClippingparameters.Center);
+		LitRaymarchMaterial->SetVectorParameterValue(RaymarchParams::SecondClippingDirection, SecondClippingparameters.Direction);
 	}
 
 	if (IntensityRaymarchMaterial)
 	{
 		IntensityRaymarchMaterial->SetVectorParameterValue(RaymarchParams::ClippingCenter, LocalClippingparameters.Center);
 		IntensityRaymarchMaterial->SetVectorParameterValue(RaymarchParams::ClippingDirection, LocalClippingparameters.Direction);
+		IntensityRaymarchMaterial->SetVectorParameterValue(RaymarchParams::SecondClippingCenter, SecondClippingparameters.Center);
+		IntensityRaymarchMaterial->SetVectorParameterValue(RaymarchParams::SecondClippingDirection, SecondClippingparameters.Direction);
 	}
 }
 

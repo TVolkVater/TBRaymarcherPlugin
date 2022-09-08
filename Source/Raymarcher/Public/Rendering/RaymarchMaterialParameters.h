@@ -17,6 +17,8 @@ const static FName LightVolume = "ALightVolume";
 const static FName WindowingParams = "WindowingParameters";
 const static FName ClippingCenter = "ClippingCenter";
 const static FName ClippingDirection = "ClippingDirection";
+const static FName SecondClippingCenter = "SecondClippingCenter";
+const static FName SecondClippingDirection = "SecondClippingDirection";
 const static FName TransferFunction = "TransferFunction";
 const static FName Steps = "Steps";
 
